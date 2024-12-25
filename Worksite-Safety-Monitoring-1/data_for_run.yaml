@@ -1,0 +1,13 @@
+train: .../train/images
+val: .../test/images
+test: .../test/images
+
+nc: 3
+names: ['construction-vest', 'helmet', 'person']
+
+roboflow:
+  workspace: ecommerce-clothes
+  project: worksite-safety-monitoring
+  version: 1
+  license: MIT
+  url: https://universe.roboflow.com/ecommerce-clothes/worksite-safety-monitoring/dataset/1
