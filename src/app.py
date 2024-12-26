@@ -41,7 +41,10 @@ def process_image():
     app.update()
 
     # Xử lý YOLO
-    yolov8_model = YOLO(f"{current_dir}\\models\\last.pt")
+    if current_dir[-3:] == "src": 
+        yolov8_model = YOLO(f"{current_dir[:-3]}models\\last.pt")  
+    else:
+        yolov8_model = YOLO(f"{current_dir}\\models\\last.pt")
     results = yolov8_model([image_path])
     img = cv2.imread(image_path)
 
@@ -59,7 +62,16 @@ def process_image():
 
         total_people = 0
         people_without_full_clothing = 0
+        for hat_idx in masks[1]:  # Mũ
+            hat_box = xyxy[hat_idx]
+            x_min, y_min, x_max, y_max = map(int, hat_box)
+            cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (0, 0, 255), 2)  # Màu đỏ
 
+        for shirt_idx in masks[0]:  # Áo
+            shirt_box = xyxy[shirt_idx]
+            x_min, y_min, x_max, y_max = map(int, shirt_box)
+            cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)  # Màu xanh dương
+        
         for person_idx in masks[2]:
             if conf[person_idx] < 0.5:
                 continue
@@ -120,7 +132,10 @@ image_label = ctk.CTkLabel(left_frame, text="Chọn một ảnh để hiển th�
 image_label.pack(fill="both", expand=True, padx=10, pady=10)
 
 # Hiển thị trạng thái xử lý
-loading_gif = Image.open("loading.gif")
+if current_dir[-3:] == "src": 
+    loading_gif = Image.open(f"{current_dir[:-3]}loading.gif")
+else:    
+    loading_gif = Image.open("loading.gif")
 loading_gif = loading_gif.resize((50, 50))  # Thay đổi kích thước GIF
 loading_gif = ImageTk.PhotoImage(loading_gif)  # Chuyển đổi GIF sang ImageTk
 loading_label = ctk.CTkLabel(left_frame, text="")
