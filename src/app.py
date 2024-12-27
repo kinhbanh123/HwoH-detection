@@ -65,7 +65,7 @@ def process_image():
         for hat_idx in masks[1]:  # Mũ
             hat_box = xyxy[hat_idx]
             x_min, y_min, x_max, y_max = map(int, hat_box)
-            cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (0, 0, 255), 2)  # Màu đỏ
+            cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (0, 255, 255), 2)  # Màu đỏ
 
         for shirt_idx in masks[0]:  # Áo
             shirt_box = xyxy[shirt_idx]
@@ -114,7 +114,7 @@ ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
 app.title("YOLOv8 Detection App")
-app.geometry("900x700")
+app.geometry("1200x800")
 
 # Frame chính
 main_frame = ctk.CTkFrame(app)
@@ -152,4 +152,20 @@ btn_save.pack(pady=20)
 result_label = ctk.CTkLabel(right_frame, text="", font=("Arial", 14))
 result_label.pack(pady=20)
 
+
+# Thêm chú thích ý nghĩa màu sắc
+legend_frame = ctk.CTkFrame(app, height=50, fg_color="gray")
+legend_frame.pack(side="bottom", fill="x", pady=10)
+
+red_label = ctk.CTkLabel(legend_frame, text="Đỏ: Người không đủ mũ hoặc áo", font=("Arial", 12), text_color="red")
+red_label.pack(side="left", padx=10)
+
+green_label = ctk.CTkLabel(legend_frame, text="Xanh lá: Người đầy đủ mũ và áo", font=("Arial", 12), text_color="green")
+green_label.pack(side="left", padx=10)
+
+blue_label = ctk.CTkLabel(legend_frame, text="Xanh dương: Áo", font=("Arial", 12), text_color="blue")
+blue_label.pack(side="left", padx=10)
+
+yellow_label = ctk.CTkLabel(legend_frame, text="Vàng: Mũ", font=("Arial", 12), text_color="yellow")
+yellow_label.pack(side="left", padx=10)
 app.mainloop()
