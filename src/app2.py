@@ -7,15 +7,15 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 current_dir = os.getcwd()
 
-# Hàm kiểm tra tâm của hộp A có nằm trong hộp B không
+# Hàm kiểm tra hộp A nằm trong hộp B bằng cách tìm tâm của hộp A có nằm trong hộp B không
 def is_inside(box_a, box_b):
     x_min_a, y_min_a, x_max_a, y_max_a = box_a
     x_min_b, y_min_b, x_max_b, y_max_b = box_b
 
-    center_x_a = (x_min_a + x_max_a) / 2
-    center_y_a = (y_min_a + y_max_a) / 2
+    center_a_x = (x_min_a + x_max_a) / 2
+    center_a_y = (y_min_a + y_max_a) / 2
 
-    return x_min_b <= center_x_a <= x_max_b and y_min_b <= center_y_a <= y_max_b
+    return x_min_b <= center_a_x <= x_max_b and y_min_b <= center_a_y <= y_max_b
 
 # Hàm xử lý ảnh với trạng thái checkbox
 def refresh_image():
@@ -74,25 +74,29 @@ def process_image(image_path=None):
             contains_shirt = any(is_inside(xyxy[shirt_idx], person_box) for shirt_idx in masks[0])
 
             color = (0, 255, 0) if contains_hat and contains_shirt else (0, 0, 255)
+            label = "An toan" if contains_hat and contains_shirt else "Khong an toan"
             if not (contains_hat and contains_shirt):
                 people_without_full_clothing += 1
 
             x_min, y_min, x_max, y_max = map(int, person_box)
             cv2.rectangle(img, (x_min, y_min), (x_max, y_max), color, 2)
-            cv2.putText(img, "Nguoi", (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            cv2.rectangle(img, (x_min, y_min + (y_max - y_min) // 2 - 10), (x_min + 100, y_min + (y_max - y_min) // 2 + 10), color, -1)
+            cv2.putText(img, label, (x_min + 5, y_min + (y_max - y_min) // 2 + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
         if show_boxes_var.get():
             for hat_idx in masks[1]:  # Mũ
                 hat_box = xyxy[hat_idx]
                 x_min, y_min, x_max, y_max = map(int, hat_box)
                 cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (0, 255, 255), 2)  # Vàng
-                cv2.putText(img, "Mu", (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+                cv2.rectangle(img, (x_min, y_min + (y_max - y_min) // 2 - 10), (x_min + 50, y_min + (y_max - y_min) // 2 + 10), (0, 255, 255), -1)
+                cv2.putText(img, "Mu", (x_min + 5, y_min + (y_max - y_min) // 2 + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
             for shirt_idx in masks[0]:  # Áo
                 shirt_box = xyxy[shirt_idx]
                 x_min, y_min, x_max, y_max = map(int, shirt_box)
                 cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)  # Xanh dương
-                cv2.putText(img, "Ao", (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                cv2.rectangle(img, (x_min, y_min + (y_max - y_min) // 2 - 10), (x_min + 50, y_min + (y_max - y_min) // 2 + 10), (255, 0, 0), -1)
+                cv2.putText(img, "Ao", (x_min + 5, y_min + (y_max - y_min) // 2 + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
 
     # Kết quả cuối
     img_result = img
