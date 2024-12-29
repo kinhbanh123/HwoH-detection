@@ -7,18 +7,15 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 current_dir = os.getcwd()
 
-# Hàm kiểm tra hộp A nằm trong hộp B
-def is_inside(box_a, box_b, threshold=0.75):
+# Hàm kiểm tra tâm của hộp A có nằm trong hộp B không
+def is_inside(box_a, box_b):
     x_min_a, y_min_a, x_max_a, y_max_a = box_a
     x_min_b, y_min_b, x_max_b, y_max_b = box_b
 
-    conditions = [
-        x_min_a >= x_min_b,
-        y_min_a >= y_min_b,
-        x_max_a <= x_max_b,
-        y_max_a <= y_max_b
-    ]
-    return sum(conditions) / len(conditions) >= threshold
+    center_x_a = (x_min_a + x_max_a) / 2
+    center_y_a = (y_min_a + y_max_a) / 2
+
+    return x_min_b <= center_x_a <= x_max_b and y_min_b <= center_y_a <= y_max_b
 
 # Hàm xử lý ảnh với trạng thái checkbox
 def refresh_image():
@@ -89,13 +86,13 @@ def process_image(image_path=None):
                 hat_box = xyxy[hat_idx]
                 x_min, y_min, x_max, y_max = map(int, hat_box)
                 cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (0, 255, 255), 2)  # Vàng
-                cv2.putText(img, "Ao", (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
+                cv2.putText(img, "Mu", (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
 
             for shirt_idx in masks[0]:  # Áo
                 shirt_box = xyxy[shirt_idx]
                 x_min, y_min, x_max, y_max = map(int, shirt_box)
                 cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)  # Xanh dương
-                cv2.putText(img, "Shirt", (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                cv2.putText(img, "Ao", (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
     # Kết quả cuối
     img_result = img
